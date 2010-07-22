@@ -37,6 +37,14 @@ class BindConfig(cmdln.Cmdln):
       print 'Usage: domain_show <domain_name>'
   do_domain_show.__doc__ = "Show detailed information about specified domain."
   
+  def do_domain_check(self, subcmd, opts, *args):
+    domain = self._find_domain(args)
+    if domain:
+      print domain.get_server_response()
+    else:
+      print 'Usage: domain_check <domain_name>'
+  do_domain_check.__doc__ = "Check response from DNS server."
+  
   def do_domain_add(self, subcmd, opts, *args):
     if len(args) > 3:
       domain = Domain(*args)

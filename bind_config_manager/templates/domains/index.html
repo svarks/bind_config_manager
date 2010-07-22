@@ -1,5 +1,14 @@
 <%inherit file="/layout.html"/>
 
+<h3>Checking named.conf...</h3>
+<% named_conf_errors = h.subprocess.Popen(config['named.checkconf_bin'], stdout=h.subprocess.PIPE).stdout.read() %>
+% if named_conf_errors:
+  <p>Some errors happened:</p>
+  ${named_conf_errors}
+% else:
+  No errors found.
+% endif
+
 <h1>Domains List</h1>
 
 <p>

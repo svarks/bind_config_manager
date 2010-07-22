@@ -22,41 +22,44 @@ def setup_app(command, conf, vars):
     # load initial data
     ####################
     
-    from bind_config_manager.model import User, Domain, Record
+    from bind_config_manager.model import User, Domain, Record, Event
     import hashlib
     
     Session.query(User).delete()
     Session.query(Record).delete()
     Session.query(Domain).delete()
+    Session.query(Event).delete()
     
     u = User(username='admin', password=hashlib.sha1('admin').hexdigest(), is_admin=True, is_active=True)
     Session.add(u)
     u = User(username='user', password=hashlib.sha1('user').hexdigest(), is_admin=False, is_active=True)
     Session.add(u)
     
-    d = Domain('master', 'example.com', 'ns1.example.com', 'hostmaster.example.com')
+    d = Domain('master', 'example.com', 'ns1.example.com.', 'hostmaster.example.com.')
     Session.add(d)
     Session.commit()
     Session.add_all([
-      Record(d.id, 'NS',    '@',        'ns1.example.com'),
-      Record(d.id, 'NS',    '@',        'ns2.example.com'),
+      Record(d.id, 'NS',    '@',        'ns1.example.com.'),
+      Record(d.id, 'NS',    '@',        'ns2.example.com.'),
+      Record(d.id, 'MX',    '@',        'mail.example.com.',  priority=10),
+      Record(d.id, 'MX',    '@',        'mail2.example.com.', priority=20),
       Record(d.id, 'A',     '@',        '192.168.10.10'),
       Record(d.id, 'A',     'ns1',      '192.168.1.10'),
       Record(d.id, 'A',     'ns2',      '192.168.1.20'),
-      Record(d.id, 'A',     'mail',     '192.168.2.10', priority=10),
-      Record(d.id, 'A',     'mail2',    '192.168.2.20', priority=20),
+      Record(d.id, 'A',     'mail',     '192.168.2.10'),
+      Record(d.id, 'A',     'mail2',    '192.168.2.20'),
       Record(d.id, 'A',     'www2',     '192.168.10.20'),
       Record(d.id, 'CNAME', 'www',      '@'),
       Record(d.id, 'CNAME', 'ftp',      '@'),
       Record(d.id, 'CNAME', 'webmail',  '@'),
     ])
     
-    d = Domain('master', '0.0.127.in-addr.arpa', 'ns1.linux.bogus', 'hostmaster.linux.bogus')
+    d = Domain('master', '0.0.127.in-addr.arpa', 'ns1.linux.bogus.', 'hostmaster.linux.bogus.')
     Session.add(d)
     Session.commit()
     Session.add_all([
-      Record(d.id, 'NS',    '@',        'ns.linux.bogus'),
-      Record(d.id, 'PTR',   '1',        'localhost'),
+      Record(d.id, 'NS',    '@',        'ns.linux.bogus.'),
+      Record(d.id, 'PTR',   '1',        'localhost.'),
     ])
     
     

@@ -13,6 +13,7 @@ import dns.rdatatype
 import dns.rdataclass
 import datetime
 import re
+import subprocess
 from time import time
 from pylons import session
 from pylons import config
@@ -157,6 +158,10 @@ class Domain(Base):
     
   def zone_file_name(self):
     return config['named.zones_dir'] + '/' + self.name
+    
+  def get_server_response(self):
+    response = subprocess.Popen([config['named.dig_bin'], self.name, 'ANY'], stdout=subprocess.PIPE)
+    return response.stdout.read()
   
   def write_zone_file(self):
     z = dns.zone.Zone(dns.name.from_text(self.name))
@@ -173,11 +178,18 @@ class Domain(Base):
     node.rdatasets.append(soa)
     
     for record in self.records:
-      rds = dns.rdataset.from_text('IN', str(record.type), int(record.ttl), str(record.value))
+      value = str(record.value)
+      if record.type == "MX":
+        value = str(record.priority) + " " + value
+      rds = dns.rdataset.from_text('IN', str(record.type), int(record.ttl), value)
       node = z.find_node(record.name, True)
       node.rdatasets.append(rds)
     
     z.to_file(self.zone_file_name())
+    self._reload_zone()
+    
+  def _reload_zone(self):
+    os.system(config['named.rndc_bin'] + " reload " + self.name)
   
   def delete_zone_file(self):
     os.remove(self.zone_file_name())
