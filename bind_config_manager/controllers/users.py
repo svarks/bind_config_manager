@@ -12,6 +12,7 @@ from bind_config_manager.forms.auth import UserForm
 from pylons.decorators import validate
 from formencode import htmlfill
 import bind_config_manager.lib.helpers as h
+import hashlib
 
 class UsersController(BaseController):
     
@@ -19,6 +20,19 @@ class UsersController(BaseController):
         if (not 'user' in session) or session['user'].is_admin == False:
             h.flash("Access denied.")
             redirect('/')
+    
+    def new(self):
+        c.user = User()
+        return render('users/new.html')
+    
+    @validate(schema=UserForm(), form='new')
+    def create(self):
+        user = User()
+        for k, v in self.form_result.items():
+            setattr(user, k, v)
+        meta.Session.add(user)
+        meta.Session.commit()
+        return redirect(url('users'))
     
     def index(self):
         c.users = meta.Session.query(User).all()
@@ -30,10 +44,15 @@ class UsersController(BaseController):
     
     @validate(schema=UserForm(), form='edit')
     def update(self, id):
-        domain = meta.Session.query(Domain).filter_by(id=id).first()
+        user = meta.Session.query(User).filter_by(id=id).first()
         for k,v in self.form_result.items():
-            if getattr(domain, k) != v:
-                setattr(domain, k, v)
+            if k == 'password':
+                if v == '':
+                    continue
+                else:
+                    v = hashlib.sha1(v).hexdigest()
+            if getattr(user, k) != v:
+                setattr(user, k, v)
         meta.Session.commit()
         return redirect(url('users'))
 
