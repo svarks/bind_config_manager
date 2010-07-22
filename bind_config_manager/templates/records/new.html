@@ -1,0 +1,13 @@
+<%inherit file="/layout.html" />
+<%namespace file="fields.html" name="fields" import="*"/>
+
+<h2>Add record to domain ${c.domain.name}</h2>
+
+${h.form(url('domain_records', domain_id=c.domain.id))}
+  ${fields.body()}
+  
+  <p>
+    ${h.submit('submit', 'Create')}
+    ${h.link_to('Cancel', url('domain', id=c.domain.id))}
+  </p>
+${h.end_form()}

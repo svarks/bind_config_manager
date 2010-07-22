@@ -1,0 +1,25 @@
+th {
+  text-align: left;
+}
+
+td.right {
+  text-align: right;
+}
+
+.odd {
+  background-color: #eee;
+}
+
+tr, td {
+  margin: 0;
+  padding: 0;
+}
+
+table.index {
+  width: 100%;
+}
+
+#container {
+  width: 960px;
+  margin: 0 auto;
+}

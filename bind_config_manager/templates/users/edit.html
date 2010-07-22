@@ -1,0 +1,13 @@
+<%inherit file="/layout.html" />
+<%namespace file="fields.html" name="fields" import="*"/>
+
+<h1>Edit User</h1>
+
+${h.form(url(controller='users', action='update', id=c.user.id), method='put')}
+  ${fields.body()}
+  
+  <p>
+    ${h.submit('submit', 'Update')}
+    ${h.link_to('Cancel', url(controller='users'))}
+  </p>
+${h.end_form()}

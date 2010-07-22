@@ -1,0 +1,27 @@
+<%inherit file="/layout.html"/>
+
+<h1>Domains List</h1>
+
+<p>
+  ${h.link_to("Add New", url(controller='domains', action='new'))}
+</p>
+
+<table class="index">
+  <tr>
+    <th>Domain name</th>
+  </tr>
+  % for domain in c.domains:
+    <tr>
+      <td>
+        ${domain.name}
+      </td>
+      <td>
+        ${h.link_to("Details", url(controller='domains', action='show', id=domain.id))}
+        |
+        ${h.link_to("Edit", url(controller='domains', action='edit', id=domain.id))}
+        |
+        ${h.link_to("Remove", url(controller='domains', action='delete', id=domain.id), class_='delete')}
+      </td>
+    </tr>
+  % endfor
+</table>

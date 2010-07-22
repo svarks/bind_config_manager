@@ -1,0 +1,27 @@
+<%inherit file="/layout.html"/>
+
+<h1>Domain ${c.domain.name}</h1>
+
+<p>
+  ${h.link_to('Add Record', url('domain_new_record', domain_id=c.domain.id))}
+</p>
+
+<table class="index">
+  <tr>
+    <th>Type</th>
+    <th>Name</th>
+    <th>Value</th>
+  </tr>
+  % for record in c.domain.records:
+    <tr>
+      <td>${record.type}</td>
+      <td>${record.name}</td>
+      <td>${record.value}</td>
+      <td>
+        ${h.link_to('Edit', url('domain_edit_record', domain_id=c.domain.id, id=record.id))}
+        |
+        ${h.link_to('Remove', url('domain_record', domain_id=c.domain.id, id=record.id), class_='delete')}
+      </td>
+    </tr>
+  % endfor
+</table>

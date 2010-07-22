@@ -1,0 +1,23 @@
+<%inherit file="/layout.html"/>
+
+<h2>Sign in</h2>
+
+${h.form(url(controller='auth', action='sign_in_submit'), method='post')}
+  <p>
+    <label>
+      Username:
+      ${h.text('username')}
+    </label>
+  </p>
+  <p>
+    <label>
+      Password:
+      ${h.text('password')}
+    </label>
+  </p>
+  
+  <p>
+    ${h.submit('submit', 'Sign in')}
+    ${h.link_to('Cancel', url('/'))}
+  </p>
+${h.end_form()}

@@ -1,0 +1,64 @@
+<%inherit file="/layout.html"/>
+
+<h1>${h.link_to("Actions history", url('events'))}</h1>
+
+${h.form(url('events'), method='get')}
+  
+  <% actions = [['', 'Any action']] %>
+  % for type in ['domain', 'record']:
+    % for action in ['insert', 'update', 'delete']:
+      <% actions.append([type +'_'+ action, type + ' ' + action]) %>
+    % endfor
+  % endfor
+  ${h.select('action', [request.params['action'] if 'action' in request.params else ''], actions)}
+  
+  <% users = [['', 'Any user']] %>
+  % for user in c.users:
+    <% users.append([user.id, user.username]) %>
+  % endfor
+  ${h.select('user', [request.params['user'] if 'user' in request.params else ''], users)}
+  
+  <label>
+    Date from
+    ${h.text('date_from', (request.params['date_from'] if 'date_from' in request.params else ''), class_='datepicker')}
+  </label>
+  <label>
+    to
+    ${h.text('date_to', (request.params['date_to'] if 'date_to' in request.params else ''), class_='datepicker')}
+  </label>
+  
+  ${h.submit('submit', 'Apply Filter')}
+${h.end_form()}
+
+<table class="index">
+  <tr>
+    <th>Action</th>
+    <th>User</th>
+    <th>Target</th>
+    <th>Created at</th>
+  </tr>
+  % for event in c.events:
+    <tr>
+      <td>
+        ${event.action}
+      </td>
+      <td>
+        ${event.user or '(system)'}
+      </td>
+      <td>
+        <% target = event.target() %>
+        % if target.__class__.__name__ == "Domain":
+          Domain ${h.link_to(target.name, url('domain', id=target.id))}
+          (${target.type})
+        % endif
+        % if target.__class__.__name__ == "Record":
+          Record ${target.type} ${target.name} ${target.value}
+          for domain ${h.link_to(target.domain.name, url('domain', id=target.domain_id))}
+        % endif
+      </td>
+      <td>
+        ${event.created_at}
+      </td>
+    </tr>
+  % endfor
+</table>

@@ -1,0 +1,31 @@
+<%inherit file="/layout.html"/>
+
+<h1>Users List</h1>
+
+${h.link_to("Add New", url(controller='users', action='new'))}
+
+<table class="index">
+  <tr>
+    <th>Username</th>
+    <th>Is admin?</th>
+    <th>Is active?</th>
+  </tr>
+  % for user in c.users:
+    <tr>
+      <td>
+        ${user.username}
+      </td>
+      <td>
+        ${user.is_admin}
+      </td>
+      <td>
+        ${user.is_active}
+      </td>
+      <td>
+        ${h.link_to("Edit", url(controller='users', action='edit', id=user.id))}
+        |
+        ${h.link_to("Remove", url(controller='users', action='destroy', id=user.id), clsss='delete')}
+      </td>
+    </tr>
+  % endfor
+</table>
