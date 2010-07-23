@@ -33,5 +33,8 @@ setup(
 
     [paste.app_install]
     main = pylons.util:PylonsInstaller
+    
+    [console_scripts]
+    bcm=bind_config_manager.command_line:run
     """,
 )

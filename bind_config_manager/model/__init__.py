@@ -185,6 +185,9 @@ class Domain(Base):
       node = z.find_node(record.name, True)
       node.rdatasets.append(rds)
     
+    if not os.path.exists(config['named.zones_dir']):
+      os.makedirs(config['named.zones_dir'])
+    
     z.to_file(self.zone_file_name())
     self._reload_zone()
     

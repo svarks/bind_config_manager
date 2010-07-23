@@ -1,12 +1,9 @@
-#!/usr/bin/env python
-
-import sys
 import cmdln
 
 # pylons project initialize
 from paste.deploy import appconfig
 from pylons import config
-from bind_config_manager.config.environment import load_environment
+from config.environment import load_environment
 conf = appconfig('config:development.ini', relative_to='.')
 load_environment(conf.global_conf, conf.local_conf)
 # loading models
@@ -99,7 +96,6 @@ class BindConfig(cmdln.Cmdln):
     for record in records:
       print '%s\t' % (record),
     print ''
-  
-if __name__ == "__main__":
-  bc = BindConfig()
-  sys.exit(bc.main())
+
+def run():
+  BindConfig().main()

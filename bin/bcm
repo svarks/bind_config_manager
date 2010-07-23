@@ -34,7 +34,7 @@ sys.path[0:0] = [
   join(base, 'eggs/MarkupSafe-0.9.2-py2.6-macosx-10.6-universal.egg'),
   ]
 
-import nose
+import bind_config_manager.command_line
 
 if __name__ == '__main__':
-    nose.run_exit()
+    bind_config_manager.command_line.run()
