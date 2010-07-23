@@ -4,30 +4,32 @@
 
 ${h.form(url('events'), method='get')}
   
-  <% actions = [['', 'Any action']] %>
-  % for type in ['domain', 'record']:
-    % for action in ['insert', 'update', 'delete']:
-      <% actions.append([type +'_'+ action, type + ' ' + action]) %>
+  <p>
+    <% actions = [['', 'Any action']] %>
+    % for type in ['domain', 'record']:
+      % for action in ['insert', 'update', 'delete']:
+        <% actions.append([type +'_'+ action, type + ' ' + action]) %>
+      % endfor
     % endfor
-  % endfor
-  ${h.select('action', [request.params['action'] if 'action' in request.params else ''], actions)}
+    ${h.select('action', [request.params['action'] if 'action' in request.params else ''], actions)}
   
-  <% users = [['', 'Any user']] %>
-  % for user in c.users:
-    <% users.append([user.id, user.username]) %>
-  % endfor
-  ${h.select('user', [request.params['user'] if 'user' in request.params else ''], users)}
+    <% users = [['', 'Any user']] %>
+    % for user in c.users:
+      <% users.append([user.id, user.username]) %>
+    % endfor
+    ${h.select('user', [request.params['user'] if 'user' in request.params else ''], users)}
   
-  <label>
-    Date from
-    ${h.text('date_from', (request.params['date_from'] if 'date_from' in request.params else ''), class_='datepicker')}
-  </label>
-  <label>
-    to
-    ${h.text('date_to', (request.params['date_to'] if 'date_to' in request.params else ''), class_='datepicker')}
-  </label>
-  
-  ${h.submit('submit', 'Apply Filter')}
+    <label>
+      Date from
+      ${h.text('date_from', (request.params['date_from'] if 'date_from' in request.params else ''), class_='datepicker')}
+    </label>
+    <label>
+      to
+      ${h.text('date_to', (request.params['date_to'] if 'date_to' in request.params else ''), class_='datepicker')}
+    </label>
+    
+    ${h.submit('submit', 'Apply Filter')}
+  </p>
 ${h.end_form()}
 
 <table class="index">

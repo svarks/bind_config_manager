@@ -1,13 +1,12 @@
 <%inherit file="/layout.html"/>
-<%namespace file="fields.html" name="fields" import="*"/>
 
 <h1>Add Domain</h1>
 
-${h.form(url(controller='domains', action='create'), method='post')}
-  ${fields.body()}
+${h.form(url('domains'), method='post')}
+  ${c.fs.render() |n}
   
-  <p>
+  <p class="buttons">
     ${h.submit('submit', 'Create')}
-    ${h.link_to('Cancel', url(controller='domains'))}
+    ${h.link_to('Cancel', url('domains'))}
   </p>
 ${h.end_form()}

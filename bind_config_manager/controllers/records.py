@@ -7,54 +7,62 @@ from bind_config_manager.lib.base import BaseController, render
 
 log = logging.getLogger(__name__)
 
-from bind_config_manager.model import meta, Domain, Record
-from bind_config_manager.forms.records import RecordForm
-from pylons.decorators import validate
-from formencode import htmlfill
+import bind_config_manager.lib.helpers as h
+from bind_config_manager import model
+from bind_config_manager.model import meta
+from formalchemy import FieldSet
+
+RecordFields = FieldSet(model.Record)
+RecordFields.configure(
+  options=[RecordFields.type.dropdown(['A', 'CNAME', 'MX', 'NS', 'PTR']), RecordFields.priority.label('Priority (for MX only)')],
+  exclude=[RecordFields.domain]
+)
 
 class RecordsController(BaseController):
     
     requires_auth = True
     
     def __before__(self, action, domain_id=None):
-        c.domain = meta.Session.query(Domain).filter_by(id=domain_id).first()
+        c.domain = meta.Session.query(model.Domain).filter_by(id=domain_id).first()
         BaseController.__before__(self)
     
-    @validate(schema=RecordForm(), form='new')
-    def create(self):
-        record = Record()
-        for k, v in self.form_result.items():
-            setattr(record, k, v)
-        record.domain_id = c.domain.id
-        # c.domain.records.append(record)
-        meta.Session.add(record)
-        meta.Session.commit()
-        return redirect(url('domain', id=c.domain.id))
-
     def new(self, domain_id):
+        c.fs = RecordFields.bind(model.Record)
         return render('records/new.html')
     
-    @validate(schema=RecordForm(), form='edit')
+    def create(self):
+        record = model.Record()
+        c.fs = RecordFields.bind(record, data=request.POST)
+        if c.fs.validate():
+            c.fs.sync()
+            record.domain_id = c.domain.id
+            meta.Session.add(record)
+            meta.Session.commit()
+            h.flash('Record created.')
+            return redirect(url('domain', id=c.domain.id))
+        else:
+            return render('records/new.html')
+    
+    def edit(self, id, format='html'):
+        record = meta.Session.query(model.Record).filter_by(id=id).first()
+        c.fs = RecordFields.bind(record)
+        return render('records/edit.html')
+    
     def update(self, id):
-        record = meta.Session.query(Record).filter_by(id=id, domain_id=c.domain.id).first()
-        for k,v in self.form_result.items():
-            if getattr(record, k) != v:
-                setattr(record, k, v)
-        meta.Session.commit()
-        return redirect(url('domain', id=c.domain.id))
-
+        record = meta.Session.query(model.Record).filter_by(id=id, domain_id=c.domain.id).first()
+        c.fs = RecordFields.bind(record, data=request.POST)
+        if c.fs.validate():
+            c.fs.sync()
+            meta.Session.commit()
+            h.flash('Record updated.')
+            return redirect(url('domain', id=c.domain.id))
+        else:
+            return render('records/edit.html')
+    
     def delete(self, id):
         record = meta.Session.query(Record).filter_by(id=id, domain_id=c.domain.id).first()
         meta.Session.delete(record)
         meta.Session.commit()
+        h.flash('Record deleted.')
         return redirect(url('domain', id=c.domain.id))
 
-    def show(self, id):
-        c.record = meta.Session.query(Record).filter_by(id=id).first()
-        return render('records/show.html')
-
-    def edit(self, id, format='html'):
-        c.record = meta.Session.query(Record).filter_by(id=id).first()
-        values = c.record.__dict__
-        values['_method'] = 'put'
-        return htmlfill.render(render('records/edit.html'), values)

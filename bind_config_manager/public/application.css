@@ -1,25 +1,75 @@
-th {
-  text-align: left;
-}
-
-td.right {
-  text-align: right;
-}
-
-.odd {
-  background-color: #eee;
-}
-
-tr, td {
-  margin: 0;
-  padding: 0;
-}
-
-table.index {
-  width: 100%;
-}
+/* Layout */
 
 #container {
   width: 960px;
   margin: 0 auto;
+}
+#header .logo {
+  float: left;
+}
+#header .user-status {
+  float: right;
+}
+
+#flash-messages .flash {
+  padding: 5px 8px;
+  margin: 10px 0;
+}
+#flash-messages .flash.notice {
+  background-color: #ccffcc;
+  border: solid 1px #66cc66;
+}
+#flash-messages .flash.warning {
+  background-color: #ffcccc;
+  border: solid 1px #cc6666;
+}
+
+/* Forms */
+
+form div {
+  margin: 10px 0;
+}
+form div label {
+  display: block;
+  width: 150px;
+  float: left;
+  text-align: right;
+  margin-right: 20px;
+}
+form .buttons {
+  margin-left: 170px;
+}
+form .buttons input[type=submit] {
+  margin-right: 5px;
+}
+
+/* Tables */
+
+table { border-collapse: separate; border-spacing: 0; }
+table, td, th { vertical-align: middle; }
+table.index {
+  width: 100%;
+}
+td {
+  border-top: 1px dashed #ccc;
+}
+tr, td {
+  margin: 0;
+  padding: 0;
+}
+td {
+  padding: 5px;
+}
+th {
+  text-align: left;
+}
+
+
+/* Misc */
+
+.odd {
+  background-color: #fafafa;
+}
+.clear {
+  clear: both;
 }

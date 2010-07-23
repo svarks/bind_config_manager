@@ -7,57 +7,62 @@ from bind_config_manager.lib.base import BaseController, render
 
 log = logging.getLogger(__name__)
 
-from bind_config_manager.model import meta, User
-from bind_config_manager.forms.auth import UserForm
-from pylons.decorators import validate
-from formencode import htmlfill
+from bind_config_manager import model
+from bind_config_manager.model import meta
 import bind_config_manager.lib.helpers as h
-import hashlib
+
+import formalchemy
+from formalchemy import FieldSet
+
+UserFields = FieldSet(model.User)
+UserFields.configure(include=[UserFields.username, UserFields.password, UserFields.is_admin, UserFields.is_active])
+UserFields.password.name = 'password'
 
 class UsersController(BaseController):
     
-    def __before__(self):
-        if (not 'user' in session) or session['user'].is_admin == False:
-            h.flash("Access denied.")
-            redirect('/')
+    requires_admin = True
     
     def new(self):
-        c.user = User()
+        c.fs = UserFields
         return render('users/new.html')
     
-    @validate(schema=UserForm(), form='new')
     def create(self):
-        user = User()
-        for k, v in self.form_result.items():
-            setattr(user, k, v)
-        meta.Session.add(user)
-        meta.Session.commit()
-        return redirect(url('users'))
+        user = model.User()
+        c.fs = UserFields.bind(user, data=request.POST)
+        if c.fs.validate():
+            c.fs.sync()
+            meta.Session.add(user)
+            meta.Session.commit()
+            h.flash('User created.')
+            return redirect(url('users'))
+        else:
+            return render('users/new.html')
     
     def index(self):
-        c.users = meta.Session.query(User).all()
+        c.users = meta.Session.query(model.User).all()
         return render('users/index.html')
     
     def edit(self, id, format='html'):
-        c.user = meta.Session.query(User).filter_by(id=id).first()
+        user = meta.Session.query(model.User).filter_by(id=id).first()
+        user.encrypted_password = ''
+        c.fs = UserFields.bind(user)
         return render('users/edit.html')
     
-    @validate(schema=UserForm(), form='edit')
     def update(self, id):
-        user = meta.Session.query(User).filter_by(id=id).first()
-        for k,v in self.form_result.items():
-            if k == 'password':
-                if v == '':
-                    continue
-                else:
-                    v = hashlib.sha1(v).hexdigest()
-            if getattr(user, k) != v:
-                setattr(user, k, v)
-        meta.Session.commit()
-        return redirect(url('users'))
-
+        user = meta.Session.query(model.User).filter_by(id=id).first()
+        c.fs = UserFields.bind(user, data=request.POST)
+        c.fs.password.validators.remove(formalchemy.validators.required)
+        if c.fs.validate():
+            c.fs.sync()
+            meta.Session.commit()
+            h.flash('User updated.')
+            return redirect(url('users'))
+        else:
+            return render('users/edit.html')
+    
     def delete(self, id):
-        user = meta.Session.query(User).filter_by(id=id).first()
+        user = meta.Session.query(model.User).filter_by(id=id).first()
         meta.Session.delete(user)
         meta.Session.commit()
+        h.flash('User deleted.')
         return redirect(url('users'))

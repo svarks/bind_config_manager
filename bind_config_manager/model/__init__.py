@@ -14,6 +14,8 @@ import dns.rdataclass
 import datetime
 import re
 import subprocess
+import hashlib
+
 from time import time
 from pylons import session
 from pylons import config
@@ -21,11 +23,21 @@ from pylons import config
 class User(Base):
   __tablename__ = 'users'
   
-  id        = sa.Column(sa.types.Integer, primary_key=True)
-  username  = sa.Column(sa.types.Unicode)
-  password  = sa.Column(sa.types.Unicode)
-  is_admin  = sa.Column(sa.types.Boolean, default=False)
-  is_active = sa.Column(sa.types.Boolean, default=False)
+  id                  = sa.Column(sa.types.Integer, primary_key=True)
+  username            = sa.Column(sa.types.Unicode, nullable=False)
+  encrypted_password  = sa.Column(sa.types.Unicode, nullable=False)
+  is_admin            = sa.Column(sa.types.Boolean, default=False)
+  is_active           = sa.Column(sa.types.Boolean, default=False)
+  
+  def _get_password(self):
+    return self.encrypted_password
+  def _set_password(self, password):
+    if password:
+      self.encrypted_password = hashlib.sha1(password).hexdigest()
+  password = sa.orm.synonym('encrypted_password', descriptor=property(_get_password, _set_password))
+  
+  def authenticate(self, password):
+    return hashlib.sha1(password).hexdigest() == self.password
   
   def __str__(self):
     return self.username
@@ -109,9 +121,9 @@ class Record(Base):
   
   id        = sa.Column(sa.types.Integer, primary_key=True)
   domain_id = sa.Column(sa.types.Integer, sa.ForeignKey('domains.id'))
-  type      = sa.Column(sa.types.Unicode)
-  name      = sa.Column(sa.types.Unicode)
-  value     = sa.Column(sa.types.Unicode)
+  type      = sa.Column(sa.types.Unicode, nullable=False)
+  name      = sa.Column(sa.types.Unicode, nullable=False)
+  value     = sa.Column(sa.types.Unicode, nullable=False)
   priority  = sa.Column(sa.types.Integer)
   ttl       = sa.Column(sa.types.Integer, default=3600)
   
@@ -128,10 +140,10 @@ class Domain(Base):
   __mapper_args__ = {'extension': DomainCallbacks()}
   
   id              = sa.Column(sa.types.Integer, primary_key=True)
-  type            = sa.Column(sa.types.Unicode)
-  name            = sa.Column(sa.types.Unicode)
-  soa_nameserver  = sa.Column(sa.types.Unicode)
-  admin_mailbox   = sa.Column(sa.types.Unicode)
+  type            = sa.Column(sa.types.Unicode, nullable=False)
+  name            = sa.Column(sa.types.Unicode, nullable=False)
+  soa_nameserver  = sa.Column(sa.types.Unicode, nullable=False)
+  admin_mailbox   = sa.Column(sa.types.Unicode, nullable=False)
   serial          = sa.Column(sa.types.Integer, default=int(time()))
   refresh_ttl     = sa.Column(sa.types.Integer, default=28800)
   retry_ttl       = sa.Column(sa.types.Integer, default=14400)

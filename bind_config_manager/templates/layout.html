@@ -9,26 +9,29 @@
   </head>
   <body>
     <div id="container">
-      <div class="header">
-        <h1>
-          ${h.link_to("Bind Config Panel", url('/'))}
-        </h1>
-        <p>
+      <div id="header">
+        <div class="logo">
+          <h1>
+            ${h.link_to("Bind Config Panel", url('/'))}
+          </h1>
+        </div>
+        <div class="user-status">
           % if 'user' in session:
             Welcome, ${session['user'].username}! ${h.link_to("Not you?", url(controller='auth', action='sign_out'))}
           % else:
             Welcome, Guest! ${h.link_to("Sign In", url(controller='auth', action='sign_in'))} or ${h.link_to("Sign Up", url(controller='auth', action='sign_up'))}
           % endif
-        </p>
+        </div>
+        <div class="clear" />
       </div>
       
       <% messages = h.flash.pop_messages() %>
       % if messages:
-      <ul id="flash-messages">
+      <div id="flash-messages">
           % for message in messages:
-          <li>${message}</li>
+          <div class="flash ${message.category}">${message}</div>
           % endfor
-      </ul>
+      </div>
       % endif
       
       

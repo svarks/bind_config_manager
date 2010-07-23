@@ -30,9 +30,9 @@ def setup_app(command, conf, vars):
     Session.query(Domain).delete()
     Session.query(Event).delete()
     
-    u = User(username='admin', password=hashlib.sha1('admin').hexdigest(), is_admin=True, is_active=True)
+    u = User(username='admin', password='admin', is_admin=True, is_active=True)
     Session.add(u)
-    u = User(username='user', password=hashlib.sha1('user').hexdigest(), is_admin=False, is_active=True)
+    u = User(username='user', password='user', is_admin=False, is_active=True)
     Session.add(u)
     
     d = Domain('master', 'example.com', 'ns1.example.com.', 'hostmaster.example.com.')

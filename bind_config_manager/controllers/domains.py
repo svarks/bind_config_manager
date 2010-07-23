@@ -7,53 +7,61 @@ from bind_config_manager.lib.base import BaseController, render
 
 log = logging.getLogger(__name__)
 
-from bind_config_manager.model import meta, Domain
-from bind_config_manager.forms.domains import DomainForm
-from pylons.decorators import validate
-from formencode import htmlfill
+import bind_config_manager.lib.helpers as h
+from bind_config_manager import model
+from bind_config_manager.model import meta
+from formalchemy import FieldSet
+
+DomainFields = FieldSet(model.Domain)
+DomainFields.configure(options=[DomainFields.type.dropdown(['master', 'slave'])], exclude=[DomainFields.records])
 
 class DomainsController(BaseController):
     
     requires_auth = True
     
     def index(self):
-        c.domains = meta.Session.query(Domain).all()
+        c.domains = meta.Session.query(model.Domain).all()
         return render('domains/index.html')
     
-    @validate(schema=DomainForm(), form='new')
-    def create(self):
-        domain = Domain()
-        for k, v in self.form_result.items():
-            setattr(domain, k, v)
-        meta.Session.add(domain)
-        meta.Session.commit()
-        return redirect('domains')
-
     def new(self):
+        c.fs = DomainFields
         return render('domains/new.html')
     
-    @validate(schema=DomainForm(), form='edit')
+    def create(self):
+        domain = model.Domain()
+        c.fs = DomainFields.bind(domain, data=request.POST)
+        if c.fs.validate():
+            c.fs.sync()
+            meta.Session.add(domain)
+            meta.Session.commit()
+            h.flash('Domain created.')
+            return redirect(url('domains'))
+        else:
+            return render('domains/new.html')
+    
+    def show(self, id):
+        c.domain = meta.Session.query(model.Domain).filter_by(id=id).first()
+        return render('domains/show.html')
+    
+    def edit(self, id, format='html'):
+        c.domain = meta.Session.query(model.Domain).filter_by(id=id).first()
+        c.fs = DomainFields.bind(c.domain)
+        return render('domains/edit.html')
+    
     def update(self, id):
-        domain = meta.Session.query(Domain).filter_by(id=id).first()
-        for k,v in self.form_result.items():
-            if getattr(domain, k) != v:
-                setattr(domain, k, v)
-        meta.Session.commit()
-        return redirect(url('domains'))
-
+        domain = meta.Session.query(model.Domain).filter_by(id=id).first()
+        c.fs = DomainFields.bind(domain, data=request.POST)
+        if c.fs.validate():
+            c.fs.sync()
+            meta.Session.commit()
+            h.flash('Domain updated.')
+            return redirect(url('domains'))
+        else:
+            return render('domains/edit.html')
+    
     def delete(self, id):
-        domain = meta.Session.query(Domain).filter_by(id=id).first()
+        domain = meta.Session.query(model.Domain).filter_by(id=id).first()
         meta.Session.delete(domain)
         meta.Session.commit()
+        h.flash('Domain deleted.')
         return redirect(url('domains'))
-
-    def show(self, id):
-        c.domain = meta.Session.query(Domain).filter_by(id=id).first()
-        return render('domains/show.html')
-
-    def edit(self, id, format='html'):
-        c.domain = meta.Session.query(Domain).filter_by(id=id).first()
-        values = c.domain.__dict__
-        values['_method'] = 'put'
-        return htmlfill.render(render('domains/edit.html'), values)
-        # return render('domains/edit.html')

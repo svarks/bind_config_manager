@@ -1,12 +1,11 @@
 <%inherit file="/layout.html" />
-<%namespace file="fields.html" name="fields" import="*"/>
 
 <h2>Edit record in domain ${c.domain.name}</h2>
 
-${h.form(url('domain_record', domain_id=c.domain.id, id=c.record.id), method='put')}
-  ${fields.body()}
+${h.form(url('domain_record', domain_id=c.domain.id, id=c.fs.model.id), method='put')}
+  ${c.fs.render() |n}
   
-  <p>
+  <p class="buttons">
     ${h.submit('submit', 'Update')}
     ${h.link_to('Cancel', url('domain', id=c.domain.id))}
   </p>

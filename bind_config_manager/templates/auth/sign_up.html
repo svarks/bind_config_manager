@@ -3,20 +3,9 @@
 <h2>Sign Up</h2>
 
 ${h.form(url(controller='auth', action='sign_up_submit'), method='post')}
-  <p>
-    <label>
-      Username:
-      ${h.text('username')}
-    </label>
-  </p>
-  <p>
-    <label>
-      Password:
-      ${h.text('password')}
-    </label>
-  </p>
+  ${c.fs.render() |n}
   
-  <p>
+  <p class="buttons">
     ${h.submit('submit', 'Sign up')}
     ${h.link_to('Cancel', url('/'))}
   </p>

@@ -14,6 +14,7 @@ import bind_config_manager.lib.helpers as h
 class BaseController(WSGIController):
     
     requires_auth = False
+    requires_admin = False
     
     def __call__(self, environ, start_response):
         """Invoke the Controller"""
@@ -27,10 +28,15 @@ class BaseController(WSGIController):
 
     def __before__(self):
         # Authentication required?
-        if self.requires_auth and 'user' not in session:
+        if (self.requires_auth or self.requires_admin) and 'user' not in session:
             # Remember where we came from so that the user can be sent there
             # after a successful login
             session['path_before_login'] = request.path_info
             session.save()
             h.flash('You have to sign up or sign in before access this page.')
             return redirect(url(controller='auth', action='sign_in'))
+        if self.requires_admin:
+            if 'user' not in session or session['user'].is_admin == False:
+                h.flash("You don't have permissions to access this page.", 'warning')
+                redirect('/')
+                

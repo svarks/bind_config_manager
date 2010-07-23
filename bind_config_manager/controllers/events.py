@@ -11,12 +11,7 @@ from bind_config_manager.model import meta, Event, User
 
 class EventsController(BaseController):
     
-    requires_auth = True
-    
-    def __before__(self):
-        if (not 'user' in session) or session['user'].is_admin == False:
-            h.flash("Access denied.")
-            redirect('/')
+    requires_admin = True
     
     def index(self):
         query = meta.Session.query(Event)

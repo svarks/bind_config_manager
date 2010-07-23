@@ -2,7 +2,9 @@
 
 <h1>Users List</h1>
 
-${h.link_to("Add New", url(controller='users', action='new'))}
+<p>
+  ${h.link_to("Add New", url(controller='users', action='new'))}
+</p>
 
 <table class="index">
   <tr>
@@ -22,9 +24,9 @@ ${h.link_to("Add New", url(controller='users', action='new'))}
         ${user.is_active}
       </td>
       <td>
-        ${h.link_to("Edit", url(controller='users', action='edit', id=user.id))}
+        ${h.link_to("Edit", url('edit_user', id=user.id))}
         |
-        ${h.link_to("Remove", url(controller='users', action='destroy', id=user.id), clsss='delete')}
+        ${h.link_to("Remove", url('user', id=user.id), class_='delete')}
       </td>
     </tr>
   % endfor
