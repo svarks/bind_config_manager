@@ -2,13 +2,14 @@ Bind Config Manager
 ===================
 
 This tool is for managing bind9 DNS server domains and records.
-Demo version available here: http://sav86.selfip.com:5000/
+Demo version available here: <http://sav86.selfip.com:5000/>
 
 Before Install
 --------------
 
 It will write zone definitions into /etc/named.conf.zones by default.
 And you have to include this file into your named.conf.
+
 To make it just add this line at the end of file:
 
     include "/etc/named.conf.zones";
@@ -35,6 +36,12 @@ Default values:
 Installation
 ------------
 
+Download source from github repo:
+
+    git clone git://github.com/sav86/bind_config_manager.git
+
+    cd bind_config_manager
+
 From application directory run:
 
     python bootstrap.py
@@ -56,7 +63,7 @@ And then start server:
 How to use
 ----------
 
-To access web version just go to http://localhost:5000/
+To access web version just go to <http://localhost:5000/>
 You can login using admin/admin credentials.
 
 Command-line is available from application directory by running
