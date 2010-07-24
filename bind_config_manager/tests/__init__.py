@@ -32,3 +32,9 @@ class TestController(TestCase):
         self.app = TestApp(wsgiapp)
         url._push_object(URLGenerator(config['routes.map'], environ))
         TestCase.__init__(self, *args, **kwargs)
+        
+    def _login(self):
+        login_page = self.app.get(url(controller='auth', action='sign_in'), status=200)
+        login_page.form['User--username'] = 'admin'
+        login_page.form['User--password'] = 'admin'
+        login_page.form.submit(status=302)

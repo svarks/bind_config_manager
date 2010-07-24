@@ -59,7 +59,7 @@ ${h.end_form()}
         % endif
       </td>
       <td>
-        ${event.created_at}
+        ${event.created_at.strftime('%b %d, %Y %H:%m')}
       </td>
     </tr>
   % endfor

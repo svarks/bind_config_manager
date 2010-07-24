@@ -1,5 +1,11 @@
 /* Layout */
 
+body {
+  font-size: 1em;
+  font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+h1 { margin-top: 0; }
+
 #container {
   width: 960px;
   margin: 0 auto;
@@ -26,6 +32,8 @@
 
 /* Forms */
 
+input[type=text], input[type=password], textarea { padding: 2px; width: 200px; }
+
 form div {
   margin: 10px 0;
 }
@@ -42,28 +50,18 @@ form .buttons {
 form .buttons input[type=submit] {
   margin-right: 5px;
 }
+form .field_error {
+  color: #f66;
+  font-weight: bold;
+}
 
 /* Tables */
 
 table { border-collapse: separate; border-spacing: 0; }
 table, td, th { vertical-align: middle; }
-table.index {
-  width: 100%;
-}
-td {
-  border-top: 1px dashed #ccc;
-}
-tr, td {
-  margin: 0;
-  padding: 0;
-}
-td {
-  padding: 5px;
-}
-th {
-  text-align: left;
-}
-
+table.index { width: 100%; }
+td, th { padding: 5px; text-align: left; }
+td { border-top: 1px dashed #ccc; }
 
 /* Misc */
 

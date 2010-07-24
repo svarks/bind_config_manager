@@ -24,7 +24,7 @@ class User(Base):
   __tablename__ = 'users'
   
   id                  = sa.Column(sa.types.Integer, primary_key=True)
-  username            = sa.Column(sa.types.Unicode, nullable=False)
+  username            = sa.Column(sa.types.Unicode, nullable=False, unique=True, index=True)
   encrypted_password  = sa.Column(sa.types.Unicode, nullable=False)
   is_admin            = sa.Column(sa.types.Boolean, default=False)
   is_active           = sa.Column(sa.types.Boolean, default=False)
@@ -46,9 +46,9 @@ class Event(Base):
   __tablename__ = 'events'
 
   id          = sa.Column(sa.types.Integer, primary_key=True)
-  target_id   = sa.Column(sa.types.Integer)
+  target_id   = sa.Column(sa.types.Integer, index=True)
   action      = sa.Column(sa.types.Unicode)
-  user_id     = sa.Column(sa.types.Integer, sa.ForeignKey('users.id'))
+  user_id     = sa.Column(sa.types.Integer, sa.ForeignKey('users.id'), index=True)
   user        = sa.orm.relation(User)
   created_at  = sa.Column(sa.types.DateTime, default=datetime.datetime.now)
   
@@ -120,7 +120,7 @@ class Record(Base):
   __mapper_args__ = {'extension': RecordCallbacks()}
   
   id        = sa.Column(sa.types.Integer, primary_key=True)
-  domain_id = sa.Column(sa.types.Integer, sa.ForeignKey('domains.id'))
+  domain_id = sa.Column(sa.types.Integer, sa.ForeignKey('domains.id'), index=True)
   type      = sa.Column(sa.types.Unicode, nullable=False)
   name      = sa.Column(sa.types.Unicode, nullable=False)
   value     = sa.Column(sa.types.Unicode, nullable=False)
