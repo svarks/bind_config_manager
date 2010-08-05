@@ -11,10 +11,16 @@ import bind_config_manager.lib.helpers as h
 from bind_config_manager import model
 from bind_config_manager.model import meta
 from formalchemy import FieldSet
+from formalchemy.validators import *
 
 RecordFields = FieldSet(model.Record)
 RecordFields.configure(
-  options=[RecordFields.type.dropdown(['A', 'CNAME', 'MX', 'NS', 'PTR']), RecordFields.priority.label('Priority (for MX only)')],
+  options=[
+    RecordFields.type.dropdown(['A', 'CNAME', 'MX', 'NS', 'PTR']),
+    RecordFields.priority.label('Priority (for MX only)'),
+    RecordFields.name.validate(regex('^[@\w\.]+$')),
+    RecordFields.value.validate(regex('^[@\w\.]+$')),
+  ],
   exclude=[RecordFields.domain]
 )
 

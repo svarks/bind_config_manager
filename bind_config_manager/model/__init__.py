@@ -172,7 +172,7 @@ class Domain(Base):
     return config['named.zones_dir'] + '/' + self.name
     
   def get_server_response(self):
-    response = subprocess.Popen([config['named.dig_bin'], self.name, 'ANY'], stdout=subprocess.PIPE)
+    response = subprocess.Popen([config['named.dig_bin'], "@" + config['named.server_addr'],  self.name, 'ANY'], stdout=subprocess.PIPE)
     return response.stdout.read()
   
   def write_zone_file(self):

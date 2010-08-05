@@ -11,9 +11,19 @@ import bind_config_manager.lib.helpers as h
 from bind_config_manager import model
 from bind_config_manager.model import meta
 from formalchemy import FieldSet
+from formalchemy.validators import *
 
 DomainFields = FieldSet(model.Domain)
-DomainFields.configure(options=[DomainFields.type.dropdown(['master', 'slave'])], exclude=[DomainFields.records])
+DomainFields.configure(
+  options=[
+    DomainFields.type.dropdown(['master', 'slave']),
+    DomainFields.name.validate(regex('^[\w\.]+$')),
+    DomainFields.soa_nameserver.validate(regex('^[\w\.]+$')),
+    DomainFields.admin_mailbox.validate(regex('^[\w\.]+$')),
+  ],
+  exclude=[DomainFields.records]
+)
+
 
 class DomainsController(BaseController):
     
